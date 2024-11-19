@@ -1,0 +1,23 @@
+package com.bank.productservice;
+
+import com.bank.productservice.mapper.AccountMapper;
+import com.bank.productservice.model.dto.request.AccountRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class BankProductServiceApplication implements CommandLineRunner {
+    @Autowired
+    private AccountMapper accountMapper;
+
+    public static void main(String[] args) {
+        SpringApplication.run(BankProductServiceApplication.class, args);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        System.out.println(accountMapper.toDocument(AccountRequest.builder().accountType(0).build()).getAccountType().toString());
+    }
+}
