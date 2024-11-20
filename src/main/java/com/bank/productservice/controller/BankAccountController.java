@@ -1,29 +1,25 @@
 package com.bank.productservice.controller;
 
-import com.bank.productservice.mapper.BankAccountMapper;
 import com.bank.productservice.model.dto.request.BankAccountRequest;
-import com.bank.productservice.repository.BankAccountRepository;
+import com.bank.productservice.model.dto.response.OperationResponse;
+import com.bank.productservice.model.enums.BankAccountType;
+import com.bank.productservice.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("accounts/personal")
+@RequestMapping("products/bank-accounts")
 public class BankAccountController {
-    private final BankAccountRepository repository;
-    private final BankAccountMapper mapper;
+    private final ProductService<BankAccountRequest> service;
 
-    @PostMapping("/savings-accounts/basic")
-    private void save1(@RequestBody @Validated(BankAccountRequest.SavingsAccountBasicRequest.class) BankAccountRequest request) {
-        repository.save(mapper.toDocument(request)).subscribe();
-    }
-
-    @PostMapping("/savings-accounts/vip")
-    private void save2(@RequestBody @Validated(BankAccountRequest.SavingsAccountVipRequest.class) BankAccountRequest request) {
-        repository.save(mapper.toDocument(request)).subscribe();
+    @PostMapping(value = "{type}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<OperationResponse> save(@PathVariable int type, @RequestBody @Valid BankAccountRequest request) {
+        request.setAccountType(BankAccountType.withId(type));
+        return service.save(request);
     }
 }

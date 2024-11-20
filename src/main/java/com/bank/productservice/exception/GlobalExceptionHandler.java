@@ -1,7 +1,9 @@
 package com.bank.productservice.exception;
 
+import com.bank.productservice.model.dto.response.OperationResponse;
 import com.bank.productservice.util.Message;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -17,6 +19,11 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(value = {BadRequest.class})
+    public Mono<ResponseEntity<OperationResponse>> handleBadRequest(BadRequest e) {
+        return Mono.just(new ResponseEntity<>(new OperationResponse(Message.REQUIREMENT_NOT_MET, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST));
+    }
+
     @ExceptionHandler(value = {WebExchangeBindException.class})
     public Mono<ResponseEntity<Map<String, Object>>> handleMethodArgumentNotValidException(WebExchangeBindException e) {
         Map<String, String> errors = new LinkedHashMap<>();
@@ -33,5 +40,12 @@ public class GlobalExceptionHandler {
         response.put("timestamp", LocalDateTime.now());
         response.put("errors", errors);
         return Mono.just(new ResponseEntity<>(response, HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(value = {DuplicateKeyException.class})
+    public Mono<ResponseEntity<OperationResponse>> handleDuplicateKeyException(DuplicateKeyException e) {
+        log.error("Duplicate key exception: {}", e.getMessage());
+        OperationResponse response = new OperationResponse(Message.DUPLICATE_KEY, HttpStatus.CONFLICT);
+        return Mono.just(new ResponseEntity<>(response, HttpStatus.CONFLICT));
     }
 }

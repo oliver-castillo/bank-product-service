@@ -14,7 +14,8 @@ public enum Message {
     DUPLICATE_KEY("Uno o más datos enviados ya existen en la base de datos"),
 
     NOT_FOUND("El registro no existe"),
-    ARGUMENT_NOT_VALID("Uno o más argumentos no son válidos");
+    ARGUMENT_NOT_VALID("Uno o más argumentos no son válidos"),
+    REQUIREMENT_NOT_MET("Uno o más requisitos no se cumplen");
 
     private final String message;
 }
