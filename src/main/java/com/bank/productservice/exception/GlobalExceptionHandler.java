@@ -2,6 +2,7 @@ package com.bank.productservice.exception;
 
 import com.bank.productservice.model.dto.response.OperationResponse;
 import com.bank.productservice.util.Message;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,24 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {BadRequest.class})
     public Mono<ResponseEntity<OperationResponse>> handleBadRequest(BadRequest e) {
         return Mono.just(new ResponseEntity<>(new OperationResponse(Message.REQUIREMENT_NOT_MET, HttpStatus.BAD_REQUEST), HttpStatus.BAD_REQUEST));
+    }
+
+    @ExceptionHandler(value = {ConstraintViolationException.class})
+    public Mono<ResponseEntity<Map<String, Object>>> handleConstrainViolationException(ConstraintViolationException e) {
+        Map<String, Object> errors = new LinkedHashMap<>();
+        e.getConstraintViolations().forEach(violation -> {
+            String errorMessage = violation.getMessage();
+            String fieldName = violation.getPropertyPath().toString();
+            errors.put(fieldName, errorMessage);
+            log.error("Constraint violation: {}", errorMessage);
+        });
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("status", HttpStatus.BAD_REQUEST.getReasonPhrase());
+        response.put("code", HttpStatus.BAD_REQUEST.value());
+        response.put("message", Message.ARGUMENT_NOT_VALID.getMessage());
+        response.put("timestamp", LocalDateTime.now());
+        response.put("errors", errors);
+        return Mono.just(new ResponseEntity<>(response, HttpStatus.BAD_REQUEST));
     }
 
     @ExceptionHandler(value = {WebExchangeBindException.class})

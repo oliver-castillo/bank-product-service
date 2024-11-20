@@ -15,7 +15,9 @@ public enum Message {
 
     NOT_FOUND("El registro no existe"),
     ARGUMENT_NOT_VALID("Uno o más argumentos no son válidos"),
-    REQUIREMENT_NOT_MET("Uno o más requisitos no se cumplen");
+    REQUIREMENT_NOT_MET("Uno o más requisitos no se cumplen"),
+
+    CONSTRAINT_VIOLATION("Uno o más campos no cumplen con los requisitos");
 
     private final String message;
 }

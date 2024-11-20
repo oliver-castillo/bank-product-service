@@ -36,6 +36,8 @@ public class BankAccount extends Product {
 
     private Double averageMonthlyMinimumAmount;
 
+    private Integer maximumCommissionFreeTransactions;
+
     public BankAccount(BankAccountType accountType) {
         this.accountType = accountType;
     }
