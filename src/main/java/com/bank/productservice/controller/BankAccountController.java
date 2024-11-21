@@ -3,6 +3,7 @@ package com.bank.productservice.controller;
 import com.bank.productservice.model.dto.request.BankAccountRequest;
 import com.bank.productservice.model.dto.request.HolderRequest;
 import com.bank.productservice.model.dto.request.SignatoryRequest;
+import com.bank.productservice.model.dto.response.BankAccountResponse;
 import com.bank.productservice.model.dto.response.OperationResponse;
 import com.bank.productservice.model.enums.BankAccountType;
 import com.bank.productservice.model.enums.ClientType;
@@ -13,6 +14,7 @@ import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Objects;
@@ -20,9 +22,9 @@ import java.util.Set;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("products/bank-accounts")
+@RequestMapping("bank-accounts")
 public class BankAccountController {
-    private final ProductService<BankAccountRequest> service;
+    private final ProductService<BankAccountRequest, BankAccountResponse> service;
     private final Validator validator;
 
     @PostMapping(value = "{type}")
@@ -31,6 +33,12 @@ public class BankAccountController {
         request.setAccountType(BankAccountType.withId(type));
         validate(request);
         return service.save(request);
+    }
+
+    @GetMapping(value = "client/{clientId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Flux<BankAccountResponse> getByClientId(@PathVariable String clientId) {
+        return service.getByClientId(clientId);
     }
 
     private void validate(BankAccountRequest request) {

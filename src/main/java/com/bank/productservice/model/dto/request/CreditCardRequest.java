@@ -2,6 +2,7 @@ package com.bank.productservice.model.dto.request;
 
 import com.bank.productservice.model.enums.ProductType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,6 +17,6 @@ public class CreditCardRequest extends ProductRequest {
 
     @NotBlank
     private String cardNumber;
-    @NotBlank
+    @NotNull
     private LocalDate expirationDate;
 }

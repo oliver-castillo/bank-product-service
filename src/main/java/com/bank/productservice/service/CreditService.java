@@ -2,6 +2,7 @@ package com.bank.productservice.service;
 
 import com.bank.productservice.mapper.ProductMapper;
 import com.bank.productservice.model.dto.request.CreditRequest;
+import com.bank.productservice.model.dto.response.CreditResponse;
 import com.bank.productservice.model.dto.response.OperationResponse;
 import com.bank.productservice.repository.CreditRepository;
 import com.bank.productservice.util.Message;
@@ -9,12 +10,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class CreditService implements ProductService<CreditRequest> {
+public class CreditService implements ProductService<CreditRequest, CreditResponse> {
     private final CreditRepository repository;
     private final ProductMapper mapper;
 
@@ -27,6 +29,11 @@ public class CreditService implements ProductService<CreditRequest> {
                     .map(document -> new OperationResponse(Message.CREATED_SUCCESSFULLY, HttpStatus.CREATED))
                     .doOnSuccess(response -> log.info("Credit created successfully: {}", response.getMessage()));
         }
+    }
+
+    @Override
+    public Flux<CreditResponse> getByClientId(String clientId) {
+        return repository.findByClientId(clientId).map(mapper::toResponse);
     }
 
     private boolean validate(CreditRequest request) {
